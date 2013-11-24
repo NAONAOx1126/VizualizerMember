@@ -14,10 +14,8 @@
 	],
     "require": {
     	"php": ">=5.3.0",
-        "naonaox1126/vizualizer": "dev-master"
     },
     "require-dev": {
-        "naonaox1126/vizualizer": "dev-develop"
     },
     "autoload": {
     	"psr-0": { "VizualizerMember": "classes" }
