@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS `member_customer_delivers` (
+  `customer_deliver_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '顧客配送先ID',
+  `customer_id` int(11) NOT NULL COMMENT '顧客ID',
+  `sei` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '配送先名前（姓）',
+  `mei` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '配送先名前（名）',
+  `sei_kana` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '配送先カナ（姓）',
+  `mei_kana` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '配送先カナ（名）',
+  `zip1` varchar(3) COLLATE utf8_unicode_ci NOT NULL COMMENT '郵便番号1',
+  `zip2` varchar(4) COLLATE utf8_unicode_ci NOT NULL COMMENT '郵便番号2',
+  `pref` int(11) NOT NULL COMMENT '都道府県ID',
+  `address1` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT '住所1',
+  `address2` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '住所2',
+  `tel1` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT '電話番号1',
+  `tel2` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT '電話番号2',
+  `tel3` varchar(6) COLLATE utf8_unicode_ci NOT NULL COMMENT '電話番号3',
+  `create_time` datetime NOT NULL COMMENT 'データ作成日時',
+  `update_time` datetime NOT NULL COMMENT 'データ最終更新日時',
+  PRIMARY KEY (`customer_deliver_id`),
+  KEY `customer_id` (`customer_id`),
+  KEY `create_time` (`create_time`),
+  KEY `update_time` (`update_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='顧客配送先テーブル';

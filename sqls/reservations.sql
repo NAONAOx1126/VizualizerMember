@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS `member_reservations` (
+  `reservation_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '予約ID',
+  `company_id` int(11) NOT NULL COMMENT '管理組織ID',
+  `operator_id` int(11) DEFAULT NULL COMMENT 'オペレータID',
+  `customer_id` int(11) NOT NULL COMMENT '顧客ID',
+  `reservation_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT '予約コード',
+  `reservation_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '予約名',
+  `start_time` datetime NOT NULL COMMENT '開始時刻',
+  `end_time` datetime NOT NULL COMMENT '終了時刻',
+  `location` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '予約場所',
+  `description` varchar(4096) COLLATE utf8_unicode_ci NOT NULL COMMENT '特記事項',
+  `price` int(11) NOT NULL COMMENT '予約価格',
+  `reservation_status_id` int(11) NOT NULL COMMENT '予約ステータス',
+  `create_time` datetime NOT NULL COMMENT 'データ登録日時',
+  `update_time` datetime NOT NULL COMMENT 'データ最終更新日時',
+  PRIMARY KEY (`reservation_id`),
+  KEY `reservation_code` (`reservation_code`),
+  KEY `company_id` (`company_id`),
+  KEY `operator_id` (`operator_id`),
+  KEY `customer_id` (`customer_id`),
+  KEY `start_time` (`start_time`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='予約テーブル';
