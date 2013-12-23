@@ -33,6 +33,14 @@ class VizualizerMember_Module_Reservation_List extends Vizualizer_Plugin_Module_
 
     function execute($params)
     {
+
+        // オペレータが管理者で無い場合は、自分のスケジュールのみを対象
+        $attr = Vizualizer::attr();
+        if (!$params->check("admin_group") || !$attr[VizualizerAdmin::KEY]->hasRole(explode(",", $params->get("admin_group")))) {
+            // 管理グループ未設定もしくは、管理グループに含まれない場合は、オペレータIDで制限
+            $this->addCondition("operator_id", $attr[VizualizerAdmin::KEY]->operator_id);
+        }
+
         // 指定日と前後の日付を設定
         $post = Vizualizer::request();
         $search = $post["search"];

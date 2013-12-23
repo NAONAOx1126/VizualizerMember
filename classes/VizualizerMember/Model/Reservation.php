@@ -94,6 +94,19 @@ class VizualizerMember_Model_Reservation extends Vizualizer_Plugin_Model
     }
 
     /**
+     * 予約に紐づくスケジュールを取得
+     *
+     * @return オペレータ
+     */
+    public function schedule()
+    {
+        $loader = new Vizualizer_Plugin("admin");
+        $schedule = $loader->loadModel("OperatorSchedule");
+        $schedule->findBy(array("operator_id" => $this->operator_id, "le:start_time" => $this->start_time, "ge:end_time" => $this->start_time));
+        return $schedule;
+    }
+
+    /**
      * 予約に紐づく顧客を取得
      *
      * @return 顧客
