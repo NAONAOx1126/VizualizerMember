@@ -46,5 +46,15 @@ class VizualizerMember
      */
     final public static function install()
     {
+        VizualizerMember_Table_Customers::install();
+        VizualizerMember_Table_CustomerTypes::install();
+        VizualizerMember_Table_CustomerStatuses::install();
+        VizualizerMember_Table_CustomerExternalTypes::install();
+        VizualizerMember_Table_CustomerExternals::install();
+        VizualizerMember_Table_CustomerDelivers::install();
+        VizualizerMember_Table_CustomerFavorites::install();
+        VizualizerMember_Table_PointLogs::install();
+        VizualizerMember_Table_Reservations::install();
+        VizualizerMember_Table_ReservationStatuses::install();
     }
 }
