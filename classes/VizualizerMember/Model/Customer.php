@@ -63,6 +63,16 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
     }
 
     /**
+     * ログインIDでデータを取得する。
+     *
+     * @param $login_id ログインID
+     */
+    public function findByLoginId($login_id)
+    {
+        $this->findBy(array("login_id" => $login_id));
+    }
+
+    /**
      * 電話番号でデータを取得する。
      *
      * @param $tel 電話番号

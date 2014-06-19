@@ -35,6 +35,16 @@ class VizualizerMember
 {
 
     /**
+     * 管理アカウント用セッション名
+     */
+    const SESSION_KEY = "CUSTOMER_SESSION_KEY";
+
+    /**
+     * 管理アカウント用パラメータ名
+     */
+    const KEY = "CUSTOMER";
+
+    /**
      * プラグインの初期化処理を行うメソッドです。
      */
     final public static function initialize()

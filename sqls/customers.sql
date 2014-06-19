@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `member_customers` (
   `email` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'メールアドレス',
   `email_mobile` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '携帯メールアドレス',
   `url` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'ホームページのURL',
+  `login_id` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '会員認証ID',
   `password` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '会員認証パスワード',
   `sex` int(1) DEFAULT NULL COMMENT '性別',
   `job` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '職業',
