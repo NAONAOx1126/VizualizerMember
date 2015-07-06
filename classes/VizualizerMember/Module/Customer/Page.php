@@ -34,9 +34,11 @@ class VizualizerMember_Module_Customer_Page extends Vizualizer_Plugin_Module_Pag
     function execute($params)
     {
         $post = Vizualizer::request();
-        $search = $post["search"];
-        $search["active_flg"] = "1";
-        $post->set("search", $search);
+        if ($params->get("activeonly", "1") === "1") {
+            $search = $post["search"];
+            $search["active_flg"] = "1";
+            $post->set("search", $search);
+        }
         $this->executeImpl($params, "Member", "Customer", $params->get("result", "customers"));
     }
 }

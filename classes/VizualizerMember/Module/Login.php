@@ -40,13 +40,13 @@ class VizualizerMember_Module_Login extends Vizualizer_Plugin_Module
                 // 顧客モデルを取得する。
                 $customer = $loader->loadModel("Customer");
 
-                if (empty($post["login_id"])) {
-                    Vizualizer_Logger::writeDebug("ログインIDが入力されていません。");
-                    throw new Vizualizer_Exception_Invalid("login", "ログインIDが入力されていません。");
+                if (empty($post["email"])) {
+                    Vizualizer_Logger::writeDebug("メールアドレスが入力されていません。");
+                    throw new Vizualizer_Exception_Invalid("login", "メールアドレスが入力されていません。");
                 }
 
                 // 渡されたログインIDでレコードを取得する。
-                $customer->findByLoginId($post["login_id"]);
+                $customer->findByEmail($post["email"]);
 
                 // ログインIDに該当するアカウントが無い場合
                 Vizualizer_Logger::writeDebug("Try Login AS :\r\n" . var_export($customer->toArray(), true));

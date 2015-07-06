@@ -28,11 +28,17 @@
  * @package VizualizerMember
  * @author Naohisa Minagawa <info@vizualizer.jp>
  */
-class VizualizerMember_Module_Customer_Delete extends Vizualizer_Plugin_Module_Delete
+class VizualizerMember_Module_Customer_Delete extends Vizualizer_Plugin_Module_Save
 {
 
     function execute($params)
     {
+        $post = Vizualizer::request();
+        $post->set("save", $post["delete"]);
+        $post->set("delete_flg", "1");
         $this->executeImpl("Member", "Customer", "customer_id");
+        $post->remove("delete");
+        $post->remove("save");
+        $post->remove("delete_flg");
     }
 }
