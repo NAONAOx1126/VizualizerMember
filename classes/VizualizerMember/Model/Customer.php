@@ -105,4 +105,46 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
         $reservations = $reservation->findAllByCustomerId($this->customer_id, $order, $reverse);
         return $reservations;
     }
+
+    public function save($ignoreOperator = false)
+    {
+        $register = false;
+        if (!array_key_exists("customer_id", $this->values_org) && !array_key_exists("customer_id", $this->values)) {
+            $register = true;
+        }
+        parent::save($ignoreOperator);
+        if($register && Vizualizer_Configure::exists("registermail_title") && Vizualizer_Configure::exists("registermail_template")){
+            // メールの内容を作成
+            $title = Vizualizer_Configure::get("registermail_title");
+            $templateName = Vizualizer_Configure::get("registermail_template");
+            $attr = Vizualizer::attr();
+            $template = $attr["template"];
+            if(!empty($template)){
+                $body = $template->fetch($templateName.".txt");
+
+                if (Vizualizer_Configure::get("delegate_company") > 0) {
+                    // ショップの情報を取得
+                    $loader = new Vizualizer_Plugin("admin");
+                    $company = $loader->loadModel("Company");
+                    $company->findBy(array("company_id" => Vizualizer_Configure::get("delegate_company")));
+
+                    // 購入者にメール送信
+                    $mail = new Vizualizer_Sendmail();
+                    $mail->setFrom($company->email);
+                    $mail->setTo($this->email);
+                    $mail->setSubject($title);
+                    $mail->addBody($body);
+                    $mail->send();
+
+                    // ショップにメール送信
+                    $mail = new Vizualizer_Sendmail();
+                    $mail->setFrom($this->email);
+                    $mail->setTo($company->email);
+                    $mail->setSubject($title);
+                    $mail->addBody($body);
+                    $mail->send();
+                }
+            }
+        }
+    }
 }
