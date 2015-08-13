@@ -122,28 +122,30 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
             if(!empty($template)){
                 $body = $template->fetch($templateName.".txt");
 
+                // ショップの情報を取得
+                $loader = new Vizualizer_Plugin("admin");
+                $company = $loader->loadModel("Company");
                 if (Vizualizer_Configure::get("delegate_company") > 0) {
-                    // ショップの情報を取得
-                    $loader = new Vizualizer_Plugin("admin");
-                    $company = $loader->loadModel("Company");
                     $company->findBy(array("company_id" => Vizualizer_Configure::get("delegate_company")));
-
-                    // 購入者にメール送信
-                    $mail = new Vizualizer_Sendmail();
-                    $mail->setFrom($company->email);
-                    $mail->setTo($this->email);
-                    $mail->setSubject($title);
-                    $mail->addBody($body);
-                    $mail->send();
-
-                    // ショップにメール送信
-                    $mail = new Vizualizer_Sendmail();
-                    $mail->setFrom($this->email);
-                    $mail->setTo($company->email);
-                    $mail->setSubject($title);
-                    $mail->addBody($body);
-                    $mail->send();
+                } else {
+                    $company->findBy(array());
                 }
+
+                // 購入者にメール送信
+                $mail = new Vizualizer_Sendmail();
+                $mail->setFrom($company->email);
+                $mail->setTo($this->email);
+                $mail->setSubject($title);
+                $mail->addBody($body);
+                $mail->send();
+
+                // ショップにメール送信
+                $mail = new Vizualizer_Sendmail();
+                $mail->setFrom($this->email);
+                $mail->setTo($company->email);
+                $mail->setSubject($title);
+                $mail->addBody($body);
+                $mail->send();
             }
         }
     }
