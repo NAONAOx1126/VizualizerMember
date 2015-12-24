@@ -106,14 +106,14 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
         return $reservations;
     }
 
-    public function save($ignoreOperator = false)
+    public function save()
     {
         $register = false;
         if (!array_key_exists("customer_id", $this->values_org) && !array_key_exists("customer_id", $this->values)) {
             $register = true;
         }
-        parent::save($ignoreOperator);
-        if($register && Vizualizer_Configure::exists("registermail_title") && Vizualizer_Configure::exists("registermail_template")){
+        parent::save();
+        if($register && Vizualizer_Configure::exists("registermail")){
             // メールの内容を作成
             $title = Vizualizer_Configure::get("registermail_title");
             $templateName = Vizualizer_Configure::get("registermail_template");
