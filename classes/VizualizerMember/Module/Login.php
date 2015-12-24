@@ -76,6 +76,9 @@ class VizualizerMember_Module_Login extends Vizualizer_Plugin_Module
                 // ログインに成功した場合には管理者情報をセッションに格納する。
                 Vizualizer_Session::set(VizualizerMember::SESSION_KEY, $customer->toArray());
 
+                // 登録に使用したキーを無効化
+                $this->removeInput("login");
+
                 // パラメータに自動遷移先が割り当てられている場合はリダイレクト
                 $this->reload();
             }
