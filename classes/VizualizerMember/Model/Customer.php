@@ -113,7 +113,7 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
             $register = true;
         }
         parent::save();
-        if($register && Vizualizer_Configure::exists("registermail_title") && Vizualizer_Configure::exists("registermail_template")){
+        if($register && Vizualizer_Configure::exists("registermail")){
             // メールの内容を作成
             $title = Vizualizer_Configure::get("registermail_title");
             $templateName = Vizualizer_Configure::get("registermail_template");
