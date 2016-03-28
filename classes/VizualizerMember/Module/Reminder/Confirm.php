@@ -37,7 +37,7 @@ class VizualizerMember_Module_Reminder_Confirm extends Vizualizer_Plugin_Module
         $post = Vizualizer::request();
 
         // リマインダーデータを取得する。
-        if($post["reminder_key"] > 0){
+        if(!empty($post["reminder_key"])){
             $loader = new Vizualizer_Plugin("Member");
             $model = $loader->loadModel("ReminderEntry");
             $model->findByReminderKey($post["reminder_key"]);
@@ -58,38 +58,45 @@ class VizualizerMember_Module_Reminder_Confirm extends Vizualizer_Plugin_Module
                         Vizualizer_Database_Factory::commit($connection);
 
                         // リセットメールの内容を作成
-                        $title = Vizualizer_Configure::get("reset_password_mail_title");
-                        $templateName = Vizualizer_Configure::get("reset_password_mail_template");
                         $attr = Vizualizer::attr();
-                        $template = $attr["template"];
-                        if(!empty($template)){
-                            $customer = $model->customer();
-                            $template->assign("reminder", $model->toArray());
-                            $body = $template->fetch($templateName.".txt");
-
-                            // ショップの情報を取得
-                            $loader = new Vizualizer_Plugin("admin");
-                            $company = $loader->loadModel("Company");
-                            if (Vizualizer_Configure::get("delegate_company") > 0) {
-                                $company->findBy(array("company_id" => Vizualizer_Configure::get("delegate_company")));
-                            } else {
+                        $mailTemplates = Vizualizer_Configure::get("mail_templates");
+                        if(is_array($mailTemplates) && array_key_exists("reset", $mailTemplates) && is_array($mailTemplates["reset"])){
+                            // メールの内容を作成
+                            $title = $mailTemplates["reset"]["title"];
+                            $templateName = $mailTemplates["reset"]["template"];
+                            $template = $attr["template"];
+                            if(!empty($template)){
+                                // ショップの情報を取得
+                                $loader = new Vizualizer_Plugin("admin");
+                                $company = $loader->loadModel("Company");
                                 $company->findBy(array());
-                            }
 
-                            // 購入者にメール送信
-                            $mail = new Vizualizer_Sendmail();
-                            $mail->setFrom($company->email);
-                            $mail->setTo($customer->email);
-                            $mail->setSubject($title);
-                            $mail->addBody($body);
-                            $mail->send();
+                                $attr["company"] = $company->toArray();
+                                $attr["reminder"] = $model->toArray();
+                                $body = $template->fetch($templateName.".txt");
+                                $this->logTemplateData();
+
+                                // 購入者にメール送信
+                                $mail = new Vizualizer_Sendmail();
+                                $mail->setFrom($company->email);
+                                $mail->setTo($model->customer()->email);
+                                $mail->setSubject($title);
+                                $mail->addBody($body);
+                                $mail->send();
+                            }
                         }
                     } catch (Exception $e) {
                         Vizualizer_Database_Factory::rollback($connection);
                         throw new Vizualizer_Exception_Database($e);
                     }
+                } else {
+                    $this->alert("Authenticate key different published by input.");
                 }
+            } else {
+                $this->alert("Can not find reminder for reminder_key.");
             }
+        } else {
+            $this->alert("Required parameter reminder_key.");
         }
     }
 }

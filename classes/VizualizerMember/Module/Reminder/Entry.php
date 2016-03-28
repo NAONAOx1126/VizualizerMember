@@ -56,36 +56,32 @@ class VizualizerMember_Module_Reminder_Entry extends Vizualizer_Plugin_Module_Sa
             // エラーが無かった場合、処理をコミットする。
             Vizualizer_Database_Factory::commit($connection);
 
-            // リマインダーメールの内容を作成
-            $title = Vizualizer_Configure::get("reminder_mail_title");
-            $templateName = Vizualizer_Configure::get("reminder_mail_template");
             $attr = Vizualizer::attr();
-            $template = $attr["template"];
-            if(!empty($template) && $reminder->reminder_entry_id > 0){
-                $customer = $reminder->customer();
-                $template->assign("reminder", $reminder->toArray());
-                $body = $template->fetch($templateName.".txt");
-
-                // ショップの情報を取得
-                $loader = new Vizualizer_Plugin("admin");
-                $company = $loader->loadModel("Company");
-                if (Vizualizer_Configure::get("delegate_company") > 0) {
-                    $company->findBy(array("company_id" => Vizualizer_Configure::get("delegate_company")));
-                } else {
+            $mailTemplates = Vizualizer_Configure::get("mail_templates");
+            if(is_array($mailTemplates) && array_key_exists("reminder", $mailTemplates) && is_array($mailTemplates["reminder"])){
+                // メールの内容を作成
+                $title = $mailTemplates["reminder"]["title"];
+                $templateName = $mailTemplates["reminder"]["template"];
+                $this->logTemplateData();
+                $template = $attr["template"];
+                if(!empty($template)){
+                    // ショップの情報を取得
+                    $loader = new Vizualizer_Plugin("admin");
+                    $company = $loader->loadModel("Company");
                     $company->findBy(array());
+
+                    $attr["company"] = $company->toArray();
+                    $attr["reminder"] = $reminder->toArray();
+                    $body = $template->fetch($templateName.".txt");
+
+                    // 購入者にメール送信
+                    $mail = new Vizualizer_Sendmail();
+                    $mail->setFrom($company->email);
+                    $mail->setTo($reminder->customer()->email);
+                    $mail->setSubject($title);
+                    $mail->addBody($body);
+                    $mail->send();
                 }
-
-                // 購入者にメール送信
-                $mail = new Vizualizer_Sendmail();
-                $mail->setFrom($company->email);
-                $mail->setTo($customer->email);
-                $mail->setSubject($title);
-                $mail->addBody($body);
-                $mail->send();
-
-                // リマインダーのオブジェクトを結果として返す。
-                $attr = Vizualizer::attr();
-                $attr["reminder"] = $reminder->toArray();
             }
         } catch (Exception $e) {
             Vizualizer_Database_Factory::rollback($connection);
