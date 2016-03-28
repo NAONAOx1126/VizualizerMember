@@ -113,15 +113,24 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
             $register = true;
         }
         parent::save();
-        if($register && Vizualizer_Configure::exists("registermail")){
+    }
+
+    public function create()
+    {
+        Vizualizer_Logger::writeDebug("Create as Customer Model.");
+        $result = parent::create();
+        Vizualizer_Logger::writeDebug("Created as Customer Model.");
+
+        $mailTemplates = Vizualizer_Configure::get("mail_templates");
+        Vizualizer_Logger::writeDebug(print_r($mailTemplates));
+        if(is_array($mailTemplates) && array_key_exists("register", $mailTemplates) && is_array($mailTemplates["register"])){
+            Vizualizer_Logger::writeDebug("Ready for register customer succeeded mail.");
             // メールの内容を作成
-            $title = Vizualizer_Configure::get("registermail_title");
-            $templateName = Vizualizer_Configure::get("registermail_template");
+            $title = $mailTemplates["register"]["title"];
+            $templateName = $mailTemplates["register"]["template"];
             $attr = Vizualizer::attr();
             $template = $attr["template"];
             if(!empty($template)){
-                $body = $template->fetch($templateName.".txt");
-
                 // ショップの情報を取得
                 $loader = new Vizualizer_Plugin("admin");
                 $company = $loader->loadModel("Company");
@@ -130,6 +139,12 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
                 } else {
                     $company->findBy(array());
                 }
+
+                $attr["customer"] = $this->toArray();
+
+                $this->logTemplateData();
+
+                $body = $template->fetch($templateName.".txt");
 
                 // 購入者にメール送信
                 $mail = new Vizualizer_Sendmail();
@@ -148,5 +163,7 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
                 $mail->send();
             }
         }
+
+        return $result;
     }
 }
