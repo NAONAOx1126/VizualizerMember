@@ -62,17 +62,25 @@ class VizualizerMember_Module_Reminder_Confirm extends Vizualizer_Plugin_Module
                         $mailTemplates = Vizualizer_Configure::get("mail_templates");
                         if(is_array($mailTemplates) && array_key_exists("reset", $mailTemplates) && is_array($mailTemplates["reset"])){
                             // メールの内容を作成
-                            $title = $mailTemplates["reset"]["title"];
                             $templateName = $mailTemplates["reset"]["template"];
                             $template = $attr["template"];
                             if(!empty($template)){
                                 // ショップの情報を取得
                                 $loader = new Vizualizer_Plugin("admin");
                                 $company = $loader->loadModel("Company");
-                                $company->findBy(array());
+
+                                // カートのモデルを取得し、モールの制限があるか確認
+                                $loader = new Vizualizer_Plugin("shop");
+                                $cart = $loader->loadModel("Cart");
+                                if ($params->get("mall", "1") != "0" && $cart && $cart->isLimitedCompany() && $cart->limitCompanyId() > 0) {
+                                    $company->findByPrimaryKey($cart->limitCompanyId());
+                                } else {
+                                    $company->findBy(array());
+                                }
 
                                 $attr["company"] = $company->toArray();
                                 $attr["reminder"] = $model->toArray();
+                                $title = "【".$company->company_name."】".$mailTemplates["reset"]["title"];
                                 $body = $template->fetch($templateName.".txt");
                                 $this->logTemplateData();
 

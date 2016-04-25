@@ -126,7 +126,6 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
         if(is_array($mailTemplates) && array_key_exists("register", $mailTemplates) && is_array($mailTemplates["register"])){
             Vizualizer_Logger::writeDebug("Ready for register customer succeeded mail.");
             // メールの内容を作成
-            $title = $mailTemplates["register"]["title"];
             $templateName = $mailTemplates["register"]["template"];
             $attr = Vizualizer::attr();
             $template = $attr["template"];
@@ -134,8 +133,12 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
                 // ショップの情報を取得
                 $loader = new Vizualizer_Plugin("admin");
                 $company = $loader->loadModel("Company");
-                if (Vizualizer_Configure::get("delegate_company") > 0) {
-                    $company->findBy(array("company_id" => Vizualizer_Configure::get("delegate_company")));
+
+                // カートのモデルを取得し、モールの制限があるか確認
+                $loader = new Vizualizer_Plugin("shop");
+                $cart = $loader->loadModel("Cart");
+                if ($params->get("mall", "1") != "0" && $cart && $cart->isLimitedCompany() && $cart->limitCompanyId() > 0) {
+                    $company->findByPrimaryKey($cart->limitCompanyId());
                 } else {
                     $company->findBy(array());
                 }
@@ -144,6 +147,7 @@ class VizualizerMember_Model_Customer extends Vizualizer_Plugin_Model
 
                 $this->logTemplateData();
 
+                $title = "【".$company->company_name."】".$mailTemplates["register"]["title"];
                 $body = $template->fetch($templateName.".txt");
 
                 // 購入者にメール送信
